@@ -1,5 +1,8 @@
 
 //https://medium.com/@alifabdullah/setting-up-private-mqtt-broker-using-mosca-in-node-js-c61a3c74f952
+//https://www.npmjs.com/package/
+//https://www.npmjs.com/package/mqtt-connection
+
 
 /* El broker */
 var mosca = require('mosca');
@@ -46,20 +49,25 @@ server.on('clientConnected', function(client) {
   console.log('cliente conectado', client.id);	
 
   //aqui debe ir la logica segun el mensaje que recibamos
-  console.log("Connected!");
-  var sql = "INSERT INTO test_mqtt (campo1) VALUES ('CONECTADO CLIENTE')";
+  console.log("cliente conectdo --- datos");
+  var sql = "INSERT INTO test_mqtt (campo1, campo2) VALUES ('CONECTADO CLIENTE','" + client.user + "')";
   con.query(sql, function (err, result) {
     if (err) throw err;
-    console.log("insertado test");
+    console.log("insertado conexion inicial");
   });
 });
 
 
 //accion cuando recibimos mensaje
 server.on('published', function(packet, client) {
-  console.log('Publicado', packet.payload);
+  console.log('Publicado', packet);
+  console.log('Publicado', client);
+  var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('mensaje','" + packet.payload +  "')";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("insertado mensaje");
+  });
   //insertamos lo publicado
-
 
 });
 
@@ -67,11 +75,15 @@ server.on('published', function(packet, client) {
 //mensaje cuando el server mqtt esta arriba
 function setup() {
   console.log('Mosca levantado');
+
+
   //al levantar insertamos en el mysql
   con.connect(function(err) {
     if (err) throw err;
+      
     console.log("Connected!");
-    var sql = "INSERT INTO test_mqtt (campo1) VALUES ('levantado server')";
+
+    var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('levantado server','timestamp')";
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("insertado test");
