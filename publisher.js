@@ -1,22 +1,21 @@
 var mqtt = require('mqtt');
-
 //var client  = mqtt.connect('mqtt://216.70.112.44')
 var client  = mqtt.connect('mqtt://localhost')
 
-var message = {
-    topic: '/hello/world',
-    payload: 'DATOS ', // or a Buffer
-    qos: 0, // 0, 1, or 2
-    retain: false // or true
-};
+//error de invalid topic: https://stackoverflow.com/questions/49907529/google-cloud-iot-invalid-mqtt-publish-topic
+
+var payload = "user:'usuario', pass:'admin1', accion: 'autenticame'";
 
 
-
-
-client.on('connect', function (connack) { 
-setInterval(function() {
-    client.publish(message, function() 
-        {console.log('done!'); }
-    );
-    }, 10000);
+client.on('connect', function () {
+    client.subscribe('test/mqtt/');
+    console.log('cliente subscripto');
 });
+
+client.on('connect', function(){
+    setInterval(function(){
+        client.publish('test/mqtt/',payload);
+        console.log('mensaje enviado');
+    },10000); 
+});
+

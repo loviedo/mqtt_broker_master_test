@@ -3,7 +3,6 @@
 //https://www.npmjs.com/package/
 //https://www.npmjs.com/package/mqtt-connection
 
-
 /* El broker */
 var mosca = require('mosca');
 var mysql = require('mysql');//instaciamos mysql
@@ -39,8 +38,6 @@ var con = mysql.createConnection({
   database: "test"
 });
 
-
-
 var server = new mosca.Server(moscaSettings);
 
 server.on('ready', setup);
@@ -49,24 +46,27 @@ server.on('clientConnected', function(client) {
   console.log('cliente conectado', client.id);	
 
   //aqui debe ir la logica segun el mensaje que recibamos
-  console.log("cliente conectdo --- datos");
-  var sql = "INSERT INTO test_mqtt (campo1, campo2) VALUES ('CONECTADO CLIENTE','" + client.user + "')";
+  //console.log("cliente conectdo --- datos");
+  /*var sql = "INSERT INTO test_mqtt (campo1, campo2) VALUES ('CONECTADO CLIENTE','" + client.user + "')";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("insertado conexion inicial");
-  });
+  });*/
 });
 
 
 //accion cuando recibimos mensaje
 server.on('published', function(packet, client) {
-  console.log('Publicado', packet);
-  console.log('Publicado', client);
-  var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('mensaje','" + packet.payload +  "')";
+  //let json = JSON.stringify(packet);
+  //console.log('payload:', packet);
+  //console.log('payload:', json);
+  console.log('cliente:', client,'TOPICO:', packet.topic, ' payload: ', JSON.stringify(packet.payload.toString()));
+  //console.log('cliente', client);
+  /*var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('mensaje','" + packet.payload +  "')";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("insertado mensaje");
-  });
+  });*/
   //insertamos lo publicado
 
 });
@@ -76,17 +76,17 @@ server.on('published', function(packet, client) {
 function setup() {
   console.log('Mosca levantado');
 
-
   //al levantar insertamos en el mysql
   con.connect(function(err) {
     if (err) throw err;
       
-    console.log("Connected!");
+    /*console.log("Connected!");
 
     var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('levantado server','timestamp')";
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("insertado test");
     });
+  */
   });
 }
