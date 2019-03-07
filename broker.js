@@ -3,6 +3,11 @@
 //https://www.npmjs.com/package/
 //https://www.npmjs.com/package/mqtt-connection
 
+//mas links de interes
+//http://www.mosca.io/docs/lib/server.js.html
+//https://github.com/mcollina/mosca/wiki/Authentication-&-Authorization
+//http://www.steves-internet-guide.com/using-node-mqtt-client/
+
 /* El broker */
 var mosca = require('mosca');
 var mysql = require('mysql');//instaciamos mysql
@@ -58,6 +63,8 @@ server.on('clientConnected', function(client) {
 
 
 
+
+
 //accion cuando recibimos mensaje
 server.on('published', function(packet, client) {
   //let json = JSON.stringify(packet);
@@ -89,9 +96,33 @@ server.on('published', function(packet, client) {
 });
 
 
+// Accepts the connection if the username and password are valid
+var authenticate = function(client, username, password, callback) {
+  var authorized = (username === 'steve' && password.toString() === 'camino');
+  if (authorized) {client.user = username;
+  console.log('autenticado: usuario ' + client.user + ' pass:' + password.toString())};
+  callback(null, authorized);
+}
+
+// In this case the client authorized as alice can publish to /users/alice taking
+// the username from the topic and verifing it is the same of the authorized user
+var authorizePublish = function(client, topic, payload, callback) {
+  callback(null, client.user == topic.split('/')[1]);
+}
+
+// In this case the client authorized as alice can subscribe to /users/alice taking
+// the username from the topic and verifing it is the same of the authorized user
+var authorizeSubscribe = function(client, topic, callback) {
+  callback(null, client.user == topic.split('/')[1]);
+}
+
 //mensaje cuando el server mqtt esta arriba
 function setup() {
   console.log('Mosca levantado');
+
+  server.authenticate = authenticate;
+  server.authorizePublish = authorizePublish;
+  server.authorizeSubscribe = authorizeSubscribe;
 
   //al levantar insertamos en el mysql
   con.connect(function(err) {

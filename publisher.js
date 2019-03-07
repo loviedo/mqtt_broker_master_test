@@ -1,11 +1,21 @@
 var mqtt = require('mqtt');
 //var client  = mqtt.connect('mqtt://216.70.112.44')
-var client  = mqtt.connect('mqtt://localhost')
+
 
 //error de invalid topic: https://stackoverflow.com/questions/49907529/google-cloud-iot-invalid-mqtt-publish-topic
 
 
 var payload = "user:'usuario', pass:'admin1', accion: 'autenticame'";
+
+var options={
+    clientId:"mqttjs01",
+    username:"steve",
+    password:"camino",
+    clean:true
+};
+
+//conectamos al mqtt
+var client  = mqtt.connect('mqtt://localhost',options)
 
 
 client.on('connect', function () {
