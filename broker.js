@@ -12,6 +12,7 @@
 var mosca = require('mosca');
 var mysql = require('mysql');//instaciamos mysql
 
+//conexion al mongo
 var mongodb = {
   //using
   type: 'mongo',		
@@ -43,11 +44,13 @@ var con = mysql.createConnection({
   database: "test"
 });
 
+
 var server = new mosca.Server(moscaSettings);
 
 //funcion ejecutada al levantar el server
 server.on('ready', setup);
 
+//cliente conectadoW
 server.on('clientConnected', function(client) {
   console.log('cliente conectado', client.id);	
 
@@ -59,11 +62,6 @@ server.on('clientConnected', function(client) {
     console.log("insertado conexion inicial");
   });*/
 });
-
-
-
-
-
 
 //accion cuando recibimos mensaje
 server.on('published', function(packet, client) {
@@ -97,8 +95,8 @@ server.on('published', function(packet, client) {
 
 
 // Accepts the connection if the username and password are valid
-var authenticate = function(client, username, password, callback) {
-  var authorized = (username === 'steve' && password.toString() === 'camino');
+var auth_inicial = function(client, username, password, callback) {
+  var authorized = (username === 'admin' && password.toString() === 'admin123');
   if (authorized) {client.user = username;
   console.log('autenticado: usuario ' + client.user + ' pass:' + password.toString())};
   callback(null, authorized);
@@ -106,23 +104,26 @@ var authenticate = function(client, username, password, callback) {
 
 // In this case the client authorized as alice can publish to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
-var authorizePublish = function(client, topic, payload, callback) {
+var auth_pub = function(client, topic, payload, callback) {
   callback(null, client.user == topic.split('/')[1]);
+
 }
 
 // In this case the client authorized as alice can subscribe to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
-var authorizeSubscribe = function(client, topic, callback) {
+var auth_sub = function(client, topic, callback) {
   callback(null, client.user == topic.split('/')[1]);
+
 }
 
 //mensaje cuando el server mqtt esta arriba
 function setup() {
   console.log('Mosca levantado');
 
-  server.authenticate = authenticate;
-  server.authorizePublish = authorizePublish;
-  server.authorizeSubscribe = authorizeSubscribe;
+  //cargamos las confs de permisos
+  server.authenticate = auth_inicial;
+  server.authorizePublish = auth_pub;
+  server.authorizeSubscribe = auth_sub;
 
   //al levantar insertamos en el mysql
   con.connect(function(err) {
