@@ -40,6 +40,7 @@ var con = mysql.createConnection({
 
 var server = new mosca.Server(moscaSettings);
 
+//funcion ejecutada al levantar el server
 server.on('ready', setup);
 
 server.on('clientConnected', function(client) {
@@ -55,12 +56,28 @@ server.on('clientConnected', function(client) {
 });
 
 
+
+
 //accion cuando recibimos mensaje
 server.on('published', function(packet, client) {
   //let json = JSON.stringify(packet);
   //console.log('payload:', packet);
   //console.log('payload:', json);
   console.log('cliente:', client,'TOPICO:', packet.topic, ' payload: ', JSON.stringify(packet.payload.toString()));
+
+  //ENVIANDO DATOS DEL SERVER A LOS CLIENTES -- CUANDO RECIBIMOS MENSAJE Y ES CIERTO TOPICO
+ /*
+ var message = {
+    topic: '/test/mqtt',
+    payload: 'abcde', // or a Buffer
+    qos: 0, // 0, 1, or 2
+    retain: false // or true
+  };
+
+  server.publish(message, function() {
+    console.log('enviado mensaje');
+  });*/
+
   //console.log('cliente', client);
   /*var sql = "INSERT INTO test_mqtt (campo1,campo2) VALUES ('mensaje','" + packet.payload +  "')";
   con.query(sql, function (err, result) {
