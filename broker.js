@@ -102,7 +102,7 @@ var auth_inicial = function(client, username, password, callback) {
   callback(null, authorized);
 }
 
-// In this case the client authorized as alice can publish to /users/alice taking
+// In this case the client authorized as admin can publish to /users/alice taking
 // the username from the topic and verifing it is the same of the authorized user
 var auth_pub = function(client, topic, payload, callback) {
   callback(null, client.user == topic.split('/')[1]);
