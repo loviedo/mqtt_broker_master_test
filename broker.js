@@ -107,6 +107,7 @@ server.on('published', function(packet, client) {
 var auth_inicial = function(client, username, password, callback) {
 
   //el cliente espera a ver si esta autorizado o no
+  console.log('viene> ' + username + ' / ' + password);
   var authorized = (username === 'admin' && password.toString() === 'admin123');
   if (authorized && !autenticado) {
     autenticado = true;
