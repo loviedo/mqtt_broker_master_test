@@ -5,10 +5,10 @@ var mqtt = require('mqtt');
 //error de invalid topic: https://stackoverflow.com/questions/49907529/google-cloud-iot-invalid-mqtt-publish-topic
 
 
-var payload = "user:'usuario', pass:'admin1', accion: 'autenticame'";
+var payload = "DATOS Y MAS DATOS //// sdfsdf 01 02";
 
 var opciones={
-    clientId:"mqttjs01",
+    clientId:"cliente_mqtt01",
     username:"admin",
     password:"admin123",
     clean:true
@@ -17,25 +17,34 @@ var opciones={
 //conectamos al mqtt, pasamos las opciones de conexion
 var client  = mqtt.connect('mqtt://localhost',opciones)
 
-client.on('connect', function () {
+
+/*client.on('connect', function () {
     client.subscribe('test/mqtt/');
     console.log('cliente subscripto');
 
-    /*setInterval(function(){
+});*/
+
+if (client.connected == true){
+    client.subscribe('test/mqtt/');
+    console.log('cliente subscripto');
+}
+
+setInterval(function(){
+    if (client.connected == true){
         client.publish('test/mqtt/',payload);
-        console.log('mensaje enviado');
-    },10000); */
-});
+        console.log('mensaje enviado/ topico: test/mqtt/ payload: ' + payload);
+    }
+},10000); 
 
 
-client.on('connect', function(){
+/*client.on('connect', function(){
     client.publish('test/mqtt/',payload);
     console.log('mensaje enviado');
-    /*setInterval(function(){
+    setInterval(function(){
         client.publish('test/mqtt/',payload);
         console.log('mensaje enviado');
-    },10000); */
-});
+    },10000); 
+});*/
 
 //cuando el server envia un mensaje
 client.on('message', function (topic, message) {

@@ -11,6 +11,7 @@
 /* El broker */
 var mosca = require('mosca');
 var mysql = require('mysql');//instaciamos mysql
+var autenticado = false;
 
 //conexion al mongo
 var mongodb = {
@@ -70,6 +71,14 @@ server.on('published', function(packet, client) {
   //console.log('payload:', json);
   console.log('cliente:', client,'TOPICO:', packet.topic, ' payload: ', JSON.stringify(packet.payload.toString()));
 
+  //insertamos el mensaje
+  var sql = "INSERT INTO test_mqtt (campo1,campo2,campo3) VALUES ('" + client +  "','" + packet.topic +  "','" + JSON.stringify(packet.payload.toString()) + "')";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("insertado mensaje auth");
+  });
+
+
   //ENVIANDO DATOS DEL SERVER A LOS CLIENTES -- CUANDO RECIBIMOS MENSAJE Y ES CIERTO TOPICO
  /*
  var message = {
@@ -94,12 +103,25 @@ server.on('published', function(packet, client) {
 });
 
 
-// Accepts the connection if the username and password are valid
+// Aceptamos la conexion si las credenciales son validas
 var auth_inicial = function(client, username, password, callback) {
+
+  //el cliente espera a ver si esta autorizado o no
   var authorized = (username === 'admin' && password.toString() === 'admin123');
-  if (authorized) {client.user = username;
-  console.log('autenticado: usuario ' + client.user + ' pass:' + password.toString())};
-  callback(null, authorized);
+  if (authorized && !autenticado) {
+    autenticado = true;
+    client.user = username;
+    console.log('autenticado: usuario ' + client.user + ' pass:' + password.toString());//debug
+
+    //insertamos que esta autenticado
+    var sql = "INSERT INTO test_mqtt (campo1,campo2,campo3) VALUES ('" + client.id +  "','" + client.user +  "','" + password.toString() + "')";
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("insertado mensaje auth");
+    });
+  }
+
+  callback(null, authorized);//return si esta o no autenticado.
 }
 
 // In this case the client authorized as admin can publish to /users/alice taking
@@ -122,8 +144,8 @@ function setup() {
 
   //cargamos las confs de permisos
   server.authenticate = auth_inicial;
-  server.authorizePublish = auth_pub;
-  server.authorizeSubscribe = auth_sub;
+  //server.authorizePublish = auth_pub;
+  //server.authorizeSubscribe = auth_sub;
 
   //al levantar insertamos en el mysql
   con.connect(function(err) {
