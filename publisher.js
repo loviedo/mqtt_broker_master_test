@@ -25,11 +25,14 @@ var client  = mqtt.connect('mqtt://216.70.112.44',opciones)
 
 });*/
 
+
+//conectamos al broker MQTT
 if (client.connected == true){
     client.subscribe('test/mqtt/');
     console.log('cliente subscripto');
 }
 
+//si se conecta debe publicar para probar y vemos qué payload recibe, debe ser el json
 setInterval(function(){
     if (client.connected == true){
         client.publish('test/mqtt/',payload);
