@@ -15,8 +15,8 @@ var opciones={
 };
 
 //conectamos al mqtt, pasamos las opciones de conexion
-var client  = mqtt.connect('mqtt://216.70.112.44',opciones)
-//var client  = mqtt.connect('mqtt://localhost',opciones)
+//var client  = mqtt.connect('mqtt://216.70.112.44',opciones)
+var client  = mqtt.connect('mqtt://localhost',opciones)
 
 
 /*client.on('connect', function () {

@@ -73,10 +73,10 @@ server.on('published', function(packet, client) {
 
   //insertamos el mensaje
   var sql = "INSERT INTO test_mqtt (campo1,campo2,campo3) VALUES ('" + client +  "','" + packet.topic +  "','" + JSON.stringify(packet.payload.toString()) + "')";
-  con.query(sql, function (err, result) {
+  /*con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("insertado mensaje auth");
-  });
+  });*/
 
 
   //ENVIANDO DATOS DEL SERVER A LOS CLIENTES -- CUANDO RECIBIMOS MENSAJE Y ES CIERTO TOPICO
@@ -89,7 +89,7 @@ server.on('published', function(packet, client) {
   };
 
   server.publish(message, function() {
-    console.log('enviado mensaje');
+    console.log('enviado mensaje :' + message);
   });*/
 
   //console.log('cliente', client);
@@ -116,6 +116,7 @@ var auth_inicial = function(client, username, password, callback) {
 
     //insertamos que esta autenticado
     var sql = "INSERT INTO test_mqtt (campo1,campo2,campo3) VALUES ('" + client.id +  "','" + client.user +  "','" + password.toString() + "')";
+    //comentado, no es necesario, solo imprimo en consola
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("insertado mensaje auth");
